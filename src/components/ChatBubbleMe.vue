@@ -7,7 +7,7 @@
 					<span style="float: right;margin-top: 10px;" ><span class="contact-time">10:30</span><span class="contact-name">Toxicaker</span></span>
 				</span>
 			</div>
-			<p class="contact-messgae">dsadasdasdsdsadasdasdasdsadsasaddasdsaasdsadadqwcsacasdsadasdsacqwcqwcqwcqwdsadasdsadascqwaaa</p>
+			<p class="contact-message">dsadasdasdsdsadasdasdasdsadsasaddasdsaasdsadadqwcsacasdsadasdsacqwcqwcqwcqwdsadasdsadascqwaaa</p>
 		</div>
 	</div>
 </template>
@@ -40,7 +40,7 @@
 		margin-right:20px
 	}
 
-	.contact-messgae {
+	.contact-message {
 		
 		color: #909399;
 		display: inline-block;

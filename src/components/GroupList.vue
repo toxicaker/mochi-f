@@ -2,13 +2,13 @@
     <div>
         <el-input placeholder="Search"></el-input>
         <ul style="list-style: none;padding-left: 0;">
-            <li v-for="friend in friends" :key="friend.id">
+            <li v-for="group in groups" :key="group.id">
 				<span>
 					<span style="width: 10%;"><el-avatar
-                            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar></span>
+                            shape="square" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar></span>
 					<div class="contact">
-						<p><span class="contact-name">{{friend.nickname}}</span><span class="contact-time">{{time(friend.lastMessageTime)}}</span></p>
-						<p class="contact-message">{{friend.lastMessage === ''? '-' : friend.lastMessage}}</p>
+						<p><span class="contact-name">{{group.name}}</span><span class="contact-time">{{time(group.lastMessageTime)}}</span></p>
+						<p class="contact-message">{{group.lastMessage === ''? '-' : group.lastMessage}}</p>
 					</div>
 				</span>
             </li>
@@ -18,21 +18,21 @@
 </template>
 <script>
     import axios from "axios";
-    import {getToken, getTimeStr} from "../utils";
+    import {getToken, getTimeStr, getUserInfo} from "../utils";
 
     export default {
-        name: 'FriendList',
+        name: 'GroupList',
         data() {
             return {
-                friends: []
+                groups: []
             };
         },
         created() {
-            const url = this.apiHost + '/api/friends';
+            const url = this.apiHost + '/api/groups/list/' + getUserInfo().id;
             let myVue = this;
             axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
                 if (response.data.code === 1) {
-                    myVue.friends = response.data.data;
+                    myVue.groups = response.data.data;
                 } else {
                     myVue.$message.error(response.data.message);
                 }

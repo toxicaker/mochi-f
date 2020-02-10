@@ -2,7 +2,7 @@
     <el-menu :default-active="activeIndex" mode="horizontal">
         <el-menu-item class="brand" index="1">Mochi</el-menu-item>
         <el-submenu index="2" style="float: right;" v-if="isLoginStatus()">
-            <template slot="title"><i class="el-icon-user-solid"></i>Toxicaker</template>
+            <template slot="title"><i class="el-icon-user-solid"></i>{{userInfo.nickname}}</template>
             <el-menu-item index="2-1">Profile</el-menu-item>
             <el-menu-item index="2-2">Logout</el-menu-item>
         </el-submenu>
@@ -27,7 +27,7 @@
 
 <script>
     import axios from 'axios';
-    import {isLogin, setUserInfo} from '../utils';
+    import {getUserInfo, isLogin, setUserInfo} from '../utils';
 
     export default {
         name: 'Header',
@@ -38,13 +38,10 @@
                 username: '',
                 password: '',
                 loading: false,
-                userInfo: {
-                    'userId': '',
-                    'username': '',
-                    'token': '',
-                },
+                userInfo: getUserInfo(),
             };
         },
+
         methods: {
             onLogin: function () {
                 let myVue = this;
@@ -66,12 +63,13 @@
                         myVue.userInfo.userId = response.data.data.id;
                         myVue.userInfo.username = response.data.data.username;
                         myVue.userInfo.token = response.data.data.token;
-                        setUserInfo(myVue.userInfo);
+                        myVue.userInfo.nickname = response.data.data.nickname;
+                        setUserInfo(response.data.data);
                     } else {
                         myVue.$message.error('Oops, ' + response.data.message);
                     }
                 }).catch(function (error) {
-                    myVue.$message.error(error);
+                    myVue.$message.error(error.toString());
                 })
                     .then(function () {
                         myVue.loading = false;

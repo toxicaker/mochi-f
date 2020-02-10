@@ -56,7 +56,7 @@
 		margin-left: 20px;
 	}
 	
-	.contact-messgae {
+	.contact-message {
 		color: #909399;
 		
 	
