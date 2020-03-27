@@ -11,7 +11,7 @@ function setUserInfo(userInfo) {
 
 function getUserInfo() {
     let userInfo = window.localStorage.getItem("mochi-userInfo");
-    if (userInfo == null) return false;
+    if (userInfo == null) return {};
     return JSON.parse(userInfo);
 }
 

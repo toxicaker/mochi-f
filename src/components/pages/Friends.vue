@@ -9,8 +9,8 @@
 	</el-row>
 </template>
 <script>
-	import FriendList from './FriendList.vue'
-	import ChatWindow from './ChatWindow.vue'
+	import FriendList from '../FriendList.vue'
+	import ChatWindow from '../ChatWindow.vue'
 	export default {
 		name: 'Friends',
 		components: {

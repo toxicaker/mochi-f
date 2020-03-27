@@ -1,10 +1,17 @@
 <template>
     <el-menu :default-active="activeIndex" mode="horizontal">
-        <el-menu-item class="brand" index="1">Mochi</el-menu-item>
-        <el-submenu index="2" style="float: right;" v-if="isLoginStatus()">
+        <el-menu-item class="brand" index="brand" style="color: #606266; margin-right: 30px;font-size: 26px;">Mochi
+        </el-menu-item>
+        <el-submenu index="algorithm">
+            <template slot="title">Algorithm</template>
+            <el-menu-item index="algorithm-leetcode" @click="goTo('/leetcode')">LeetCode</el-menu-item>
+            <el-menu-item index="algorithm-lintcode" @click="goTo('/lintcode')">LintCode</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="system-design">System Design</el-menu-item>
+        <el-submenu index="auth" style="float: right;" v-if="isLoginStatus()">
             <template slot="title"><i class="el-icon-user-solid"></i>{{userInfo.nickname}}</template>
-            <el-menu-item index="2-1">Profile</el-menu-item>
-            <el-menu-item index="2-2">Logout</el-menu-item>
+            <el-menu-item index="auth-profile">Profile</el-menu-item>
+            <el-menu-item index="auth-logout">Logout</el-menu-item>
         </el-submenu>
         <el-menu-item style="float: right;" @click="loginVisible = true" v-else>Login</el-menu-item>
         <el-dialog title="Login" :visible.sync="loginVisible" width="30%">
@@ -43,6 +50,9 @@
         },
 
         methods: {
+            goTo(path) {
+                if (this.$route.path !== path) this.$router.push(path)
+            },
             onLogin: function () {
                 let myVue = this;
                 this.loading = true;
@@ -70,10 +80,9 @@
                     }
                 }).catch(function (error) {
                     myVue.$message.error(error.toString());
-                })
-                    .then(function () {
-                        myVue.loading = false;
-                    });
+                }).then(function () {
+                    myVue.loading = false;
+                });
             },
             isLoginStatus: function () {
                 return isLogin()
@@ -88,11 +97,6 @@
         line-height: 60px;
         background-color: #409EFF;
         box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-    }
-
-    .brand {
-        margin-right: 50px;
-        font-size: 20px;
     }
 
     .icon-active {

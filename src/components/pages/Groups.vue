@@ -9,8 +9,8 @@
 	</el-row>
 </template>
 <script>
-	import GroupList from './GroupList.vue'
-	import ChatWindow from './ChatWindow.vue'
+	import GroupList from '../GroupList.vue'
+	import ChatWindow from '../ChatWindow.vue'
 	export default {
 		name: 'Groups',
 		components: {
