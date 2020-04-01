@@ -21,7 +21,7 @@ export default new VueRouter({
         name: 'leetcode',
         component: LeetCode
     }, {
-        path: '/leetcode-problem',
+        path: '/leetcode-problem/:id',
         name: 'leetcode-problem',
         component: LeetCodeProblem
     }]
