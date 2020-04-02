@@ -1,7 +1,8 @@
 <template>
     <el-row :gutter="20" style="height: 100%;">
         <el-col :span="18" style="height: 100%;">
-            <el-input placeholder="Search question titles, description or IDs" style="width: 500px">
+            <el-input placeholder="Search question titles, description or IDs" style="width: 500px" v-model="keyword"
+                      @keyup.enter.native="search">
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
             </el-input>
             <el-table :data="tableData"
@@ -65,7 +66,8 @@
                     style="margin-top: 20px"
                     background
                     layout="prev, pager, next"
-                    :total="totalNum" :page-size="tableData.length" :current-page="page"
+                    :page-count="totalPage"
+                    :current-page="page + 1"
                     @current-change="requestAndRenderData">
             </el-pagination>
         </el-col>
@@ -117,7 +119,29 @@
                 return row.type === value;
             },
             requestAndRenderData(page) {
+                page = page - 1;
+                console.log(page);
                 const url = this.apiHost + '/api/leetcode/problems?page=' + page;
+                let myVue = this;
+                axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
+                    if (response.data.code === 1) {
+                        myVue.tableData = response.data.data.data;
+                        myVue.totalNum = response.data.data.totalNum;
+                        myVue.totalPage = response.data.data.totalPage;
+                        myVue.page = response.data.data.page;
+                    } else {
+                        myVue.$message.error(response.data.message);
+                    }
+                }).catch(function (error) {
+                    myVue.$message.error(error.toString());
+                });
+            },
+            search() {
+                if (this.keyword === '' || this.keyword === null) {
+                    this.requestAndRenderData(0);
+                    return;
+                }
+                let url = this.apiHost + '/api/leetcode/problems/search/' + this.keyword;
                 let myVue = this;
                 axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
                     if (response.data.code === 1) {
@@ -135,7 +159,7 @@
         },
         created() {
             if (this.$route.query.page === '' || this.$route.query.page === undefined)
-                this.requestAndRenderData(0);
+                this.requestAndRenderData(1);
             else
                 this.requestAndRenderData(this.$route.query.page);
         },
@@ -144,7 +168,8 @@
                 tableData: [],
                 totalNum: 0,
                 totalPage: 0,
-                page: 0
+                page: 0,
+                keyword: '',
             };
         }
     }
