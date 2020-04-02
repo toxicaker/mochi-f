@@ -9,11 +9,14 @@
                       style="width: 100%">
                 <el-table-column prop="number"
                                  label="#"
-                                 width="50">
+                                 width="100">
                 </el-table-column>
                 <el-table-column
                         prop="title"
                         label="Title">
+                    <template slot-scope="scope">
+                        <el-link type="primary" :href="'/leetcode/problem/'+ scope.row.id">{{scope.row.title}}</el-link>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="type"
@@ -62,7 +65,8 @@
                     style="margin-top: 20px"
                     background
                     layout="prev, pager, next"
-                    :total="1000">
+                    :total="totalNum" :page-size="tableData.length" :current-page="page"
+                    @current-change="requestAndRenderData">
             </el-pagination>
         </el-col>
         <el-col :span="6" style="height: 100%;">
@@ -100,6 +104,9 @@
     </el-row>
 </template>
 <script>
+    import axios from "axios";
+    import {getToken} from "../../utils";
+
     export default {
         name: 'LeetCode',
         methods: {
@@ -108,95 +115,36 @@
             },
             filterType(value, row) {
                 return row.type === value;
+            },
+            requestAndRenderData(page) {
+                const url = this.apiHost + '/api/leetcode/problems?page=' + page;
+                let myVue = this;
+                axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
+                    if (response.data.code === 1) {
+                        myVue.tableData = response.data.data.data;
+                        myVue.totalNum = response.data.data.totalNum;
+                        myVue.totalPage = response.data.data.totalPage;
+                        myVue.page = response.data.data.page;
+                    } else {
+                        myVue.$message.error(response.data.message);
+                    }
+                }).catch(function (error) {
+                    myVue.$message.error(error.toString());
+                });
             }
+        },
+        created() {
+            if (this.$route.query.page === '' || this.$route.query.page === undefined)
+                this.requestAndRenderData(0);
+            else
+                this.requestAndRenderData(this.$route.query.page);
         },
         data() {
             return {
-                tableData: [{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '80.6',
-                }, {
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Medium',
-                    frequency: '57.9',
-                }, {
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Normal',
-                    acceptance: '89.82%',
-                    difficulty: 'Easy',
-                    frequency: '10',
-                }, {
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                },{
-                    number: '1',
-                    title: 'How Many Numbers Are Smaller Than the Current Number',
-                    type: 'Premium',
-                    acceptance: '89.82%',
-                    difficulty: 'Hard',
-                    frequency: '20',
-                }]
+                tableData: [],
+                totalNum: 0,
+                totalPage: 0,
+                page: 0
             };
         }
     }

@@ -8,6 +8,7 @@ import LeetCodeProblem from "./components/pages/LeetCodeProblem";
 Vue.use(VueRouter);
 
 export default new VueRouter({
+    mode: 'history',
     routes: [{
         path: '/friends',
         name: 'friends',
@@ -21,7 +22,7 @@ export default new VueRouter({
         name: 'leetcode',
         component: LeetCode
     }, {
-        path: '/leetcode-problem/:id',
+        path: '/leetcode/problem/:id',
         name: 'leetcode-problem',
         component: LeetCodeProblem
     }]
