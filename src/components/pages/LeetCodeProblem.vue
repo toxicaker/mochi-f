@@ -9,46 +9,17 @@
             <el-tag size="mini" type="success" v-else>{{ problem.difficulty }}</el-tag></span>
             <div style="margin-top: 20px" v-html="problem.content" class="content"></div>
         </el-col>
-        <el-col :span="6" style="height: 100%;">
-            <div>
-                <h1>Topics</h1>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-            </div>
-            <div>
-                <h1>Company</h1>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-            </div>
-        </el-col>
+        <LeetCodeSideBar></LeetCodeSideBar>
     </el-row>
 </template>
 <script>
     import axios from "axios";
     import {getToken} from "../../utils";
+    import LeetCodeSideBar from "../LeetCodeSideBar";
 
     export default {
         name: 'LeetCodeProblem',
+        components: {LeetCodeSideBar},
         methods: {},
         data() {
             return {

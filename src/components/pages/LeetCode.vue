@@ -2,12 +2,14 @@
     <el-row :gutter="20" style="height: 100%;">
         <el-col :span="18" style="height: 100%;">
             <el-input placeholder="Search question titles, description or IDs" style="width: 500px" v-model="keyword"
-                      @keyup.enter.native="search">
+                      @keyup.enter.native="search(0)">
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
             </el-input>
             <el-table :data="tableData"
                       stripe
-                      style="width: 100%">
+                      style="width: 100%"
+                      v-loading="loading"
+                      @filter-change="filterTags">
                 <el-table-column prop="number"
                                  label="#"
                                  width="100">
@@ -23,8 +25,9 @@
                         prop="type"
                         label="Type"
                         width="150"
+                        column-key="type"
+                        :filter-multiple="false"
                         :filters="[{ text: 'Normal', value: 'Normal' }, { text: 'Premium', value: 'Premium' }]"
-                        :filter-method="filterType"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
                         <el-tag
@@ -42,8 +45,9 @@
                         prop="difficulty"
                         label="Difficulty"
                         width="150"
+                        column-key="diff"
+                        :filter-multiple="false"
                         :filters="[{ text: 'Easy', value: 'Easy' }, { text: 'Medium', value: 'Medium' }, { text: 'Hard', value: 'Hard' }]"
-                        :filter-method="filterDiff"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
                         <el-tag
@@ -71,77 +75,37 @@
                     @current-change="requestAndRenderData">
             </el-pagination>
         </el-col>
-        <el-col :span="6" style="height: 100%;">
-            <div>
-                <h1>Topics</h1>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-            </div>
-            <div>
-                <h1>Company</h1>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-                <el-tag size="small" style="margin: 5px">Apple 100</el-tag>
-            </div>
-        </el-col>
+        <LeetCodeSideBar></LeetCodeSideBar>
     </el-row>
 </template>
 <script>
     import axios from "axios";
     import {getToken} from "../../utils";
+    import LeetCodeSideBar from "../LeetCodeSideBar";
 
     export default {
         name: 'LeetCode',
+        components: {LeetCodeSideBar},
         methods: {
-            filterDiff(value, row) {
-                return row.difficulty === value;
-            },
-            filterType(value, row) {
-                return row.type === value;
+            // eslint-disable-next-line no-unused-vars
+            filterTags(filters) {
+                for(let i in filters){
+                    if(i === 'type'){
+                        this.type = filters[i][0] === undefined ? '' : filters[i][0].toLowerCase();
+                    }else if(i === 'diff'){
+                        this.difficulty = filters[i][0] === undefined ? '' : filters[i][0].toLowerCase();
+                    }
+                }
+                this.requestAndRenderData(1);
             },
             requestAndRenderData(page) {
+                this.loading = true;
                 page = page - 1;
-                console.log(page);
-                const url = this.apiHost + '/api/leetcode/problems?page=' + page;
-                let myVue = this;
-                axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
-                    if (response.data.code === 1) {
-                        myVue.tableData = response.data.data.data;
-                        myVue.totalNum = response.data.data.totalNum;
-                        myVue.totalPage = response.data.data.totalPage;
-                        myVue.page = response.data.data.page;
-                    } else {
-                        myVue.$message.error(response.data.message);
-                    }
-                }).catch(function (error) {
-                    myVue.$message.error(error.toString());
-                });
-            },
-            search() {
-                if (this.keyword === '' || this.keyword === null) {
-                    this.requestAndRenderData(0);
+                if (this.keyword !== '' && this.keyword !== null) {
+                    this.search(page);
                     return;
                 }
-                let url = this.apiHost + '/api/leetcode/problems/search/' + this.keyword;
+                const url = this.apiHost + '/api/leetcode/problems?page=' + page + '&type=' + this.type + '&difficulty=' + this.difficulty;
                 let myVue = this;
                 axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
                     if (response.data.code === 1) {
@@ -155,6 +119,29 @@
                 }).catch(function (error) {
                     myVue.$message.error(error.toString());
                 });
+                this.loading = false;
+            },
+            search(page) {
+                this.loading = true;
+                if (this.keyword === '' || this.keyword === null) {
+                    this.requestAndRenderData(1);
+                    return;
+                }
+                let url = this.apiHost + '/api/leetcode/problems/search/' + this.keyword + "?page=" + page + '&type=' + this.type + '&difficulty=' + this.difficulty;
+                let myVue = this;
+                axios.get(url, {headers: {"mochi-token": getToken()}}).then(function (response) {
+                    if (response.data.code === 1) {
+                        myVue.tableData = response.data.data.data;
+                        myVue.totalNum = response.data.data.totalNum;
+                        myVue.totalPage = response.data.data.totalPage;
+                        myVue.page = response.data.data.page;
+                    } else {
+                        myVue.$message.error(response.data.message);
+                    }
+                }).catch(function (error) {
+                    myVue.$message.error(error.toString());
+                });
+                this.loading = false;
             }
         },
         created() {
@@ -170,6 +157,9 @@
                 totalPage: 0,
                 page: 0,
                 keyword: '',
+                type: '',
+                difficulty: '',
+                loading: false
             };
         }
     }
